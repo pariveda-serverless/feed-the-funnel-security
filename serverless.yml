@@ -54,6 +54,18 @@ resources:
               - kms:GenerateDataKey*
               - kms:DescribeKey
             Resource: '*'
+          - Sid: ${self:service} ${self:provider.stage} Allow Key usage to CodeBuild app role for environment variables
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::ImportValue: codebuild-arn-app-${self:service}-${self:provider.stage}
+            Action:
+              - kms:Encrypt
+              - kms:Decrypt
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:DescribeKey
+            Resource: '*'
 
     SecretsBucket:
       Type: AWS::S3::Bucket
@@ -124,6 +136,22 @@ resources:
             Principal:
               AWS:
                 Fn::GetAtt: [ Role, Arn ]
+            Resource:
+              Fn::Join:
+                - ''
+                - - 'arn:aws:s3:::'
+                  - Ref: SecretsBucket
+                  - '/*'
+            Condition:
+               Bool:
+                 aws:SecureTransport: true
+          - Sid: Allow App CodeBuild role download and decrypt secrets
+            Effect: Allow
+            Action:
+            - s3:GetObject
+            Principal:
+              AWS:
+                Fn::ImportValue: codebuild-arn-app-${self:service}-${self:provider.stage}
             Resource:
               Fn::Join:
                 - ''

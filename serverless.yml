@@ -228,6 +228,8 @@ resources:
                       - Ref: AWS::AccountId
                       - ':table/'
                       - ${env:SERVICE}
+                      - '-'
+                      - ${self:provider.stage}
                       - '.'
                       - ${self:provider.stage}
                 - Effect: Allow

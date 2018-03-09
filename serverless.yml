@@ -227,7 +227,7 @@ resources:
                       - Ref: AWS::AccountId
                       - ':table/'
                       - ${env:SERVICE}
-                      - '-'
+                      - '.'
                       - ${self:provider.stage}
                 - Effect: Allow
                   Action:
